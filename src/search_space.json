@@ -1,0 +1,6 @@
+{
+    "NumberOfIterations": {"_type":"choice","_value":[10, 20, 50, 100, 150, 200]},
+    "LearningRate": {"_type":"uniform","_value":[0.025, 0.4]},
+    "NumberOfLeaves": {"_type":"choice","_value":[2, 6, 10, 14, 18]},
+    "L2Regularization": {"_type":"choice","_value":[0, 0.5, 1]}
+}

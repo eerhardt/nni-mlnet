@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.AutoML" Version="0.17.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="digits.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

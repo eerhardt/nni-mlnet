@@ -1,0 +1,25 @@
+authorName: default
+experimentName: example_mlnet-classification
+trialConcurrency: 3
+maxExecDuration: 10m
+maxTrialNum: 10
+#choice: local, remote
+trainingServicePlatform: aml
+searchSpacePath: search_space.json
+#choice: true, false
+useAnnotation: false
+tuner:
+  #choice: TPE, Random, Anneal, Evolution, BatchTuner, MetisTuner
+  builtinTunerName: TPE
+  classArgs:
+    #choice: maximize, minimize
+    optimize_mode: maximize
+trial:
+  command: dotnet run
+  codeDir: .
+  image: eerhardt/nni:0.1
+  computeTarget: eerh-aml-cluster
+amlConfig:
+  subscriptionId: 5199dcdd-7734-42d6-8131-da26c48a99ce
+  resourceGroup: ML
+  workspaceName: eerhardt-ML
