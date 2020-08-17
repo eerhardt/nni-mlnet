@@ -20,6 +20,5 @@ RUN apt-get update \
     # Cleanup
     && rm -rf /var/lib/apt/lists/*
 
-# TODO:
-# 1. Get rid of the "Welcome to .NET Core" message/first run
-# 2. Pre-populate ML.NET in the docker image so it doesn't need to get restored every new run
+COPY src/Microsoft.ML.Nni.csproj /app/
+RUN dotnet restore /app && rm -rf /app

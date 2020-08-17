@@ -17,7 +17,7 @@ tuner:
 trial:
   command: dotnet run
   codeDir: .
-  image: eerhardt/nni:0.1
+  image: eerhardt/nni:0.2
   computeTarget: eerh-aml-cluster
 amlConfig:
   subscriptionId: 5199dcdd-7734-42d6-8131-da26c48a99ce
