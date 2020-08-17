@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Microsoft.ML.AutoML;
 using Microsoft.ML.Trainers.LightGbm;
@@ -25,23 +24,10 @@ namespace Microsoft.ML.Nni
             IDataView trainSet = preprocessPipeline.Transform(trainTestSplit.TrainSet);
             IDataView testSet = preprocessPipeline.Transform(trainTestSplit.TestSet);
 
-            Dictionary<string, string> parameters = GetDefaultParameters();
             Nni nni = new Nni();
-            var receivedParameters = nni.GetNextParameter();
-            parameters.Update(receivedParameters);
+            Dictionary<string, string> parameters = nni.GetNextParameter();
 
-            var trainer = ctx.MulticlassClassification.Trainers.LightGbm(new LightGbmMulticlassTrainer.Options()
-            {
-                NumberOfIterations = int.Parse(parameters["NumberOfIterations"]),
-                LearningRate = double.Parse(parameters["LearningRate"]),
-                NumberOfLeaves = int.Parse(parameters["NumberOfLeaves"]),
-                UseSoftmax = bool.Parse(parameters["UseSoftmax"]),
-                Booster = new GradientBooster.Options()
-                {
-                    L2Regularization = double.Parse(parameters["L2Regularization"]),
-                    L1Regularization = double.Parse(parameters["L1Regularization"]),
-                }
-            });
+            var trainer = ctx.MulticlassClassification.Trainers.LightGbm(CreateOptions(parameters));
 
             var model = trainer.Fit(trainSet);
             var metrics = ctx.MulticlassClassification.Evaluate(model.Transform(testSet));
@@ -54,23 +40,51 @@ namespace Microsoft.ML.Nni
             nni.ReportFinalResult(metrics.MicroAccuracy);
         }
 
-        private static Dictionary<string, string> GetDefaultParameters() =>
-            new Dictionary<string, string>()
-            {
-                { "NumberOfIterations", "100" },
-                { "LearningRate", ".25" },
-                { "NumberOfLeaves", "30" },
-                { "UseSoftmax", "false" },
-                { "L2Regularization", "0.1" },
-                { "L1Regularization", "0" },
-            };
-
-        private static void Update(this Dictionary<string, string> target, Dictionary<string, string> updates)
+        private static LightGbmMulticlassTrainer.Options CreateOptions(Dictionary<string, string> parameters)
         {
-            foreach(var kvp in updates)
+            var options = new LightGbmMulticlassTrainer.Options();
+            if (parameters.TryGetValue("NumberOfIterations", out string numberOfIterations))
             {
-                target[kvp.Key] = kvp.Value;
+                options.NumberOfIterations = int.Parse(numberOfIterations);
             }
+            if (parameters.TryGetValue("LearningRate", out string learningRate))
+            {
+                options.LearningRate = double.Parse(learningRate);
+            }
+            if (parameters.TryGetValue("NumberOfLeaves", out string numberOfLeaves))
+            {
+                options.NumberOfLeaves = ParseInt(numberOfLeaves);
+            }
+            if (parameters.TryGetValue("UseSoftmax", out string useSoftmax))
+            {
+                options.UseSoftmax = bool.Parse(useSoftmax);
+            }
+
+            options.Booster = new GradientBooster.Options();
+            if (parameters.TryGetValue("L2Regularization", out string l2Regularization))
+            {
+                options.Booster.L2Regularization = double.Parse(l2Regularization);
+            }
+            if (parameters.TryGetValue("L1Regularization", out string l1Regularization))
+            {
+                options.Booster.L1Regularization = double.Parse(l1Regularization);
+            }
+
+            return options;
+        }
+
+        private static int ParseInt(string value)
+        {
+            if (int.TryParse(value, out int intValue))
+            {
+                return intValue;
+            }
+            else if (float.TryParse(value, out float floatValue))
+            {
+                return (int)floatValue;
+            }
+
+            throw new FormatException($"Can't parse '{value}' into an int.");
         }
     }
 }

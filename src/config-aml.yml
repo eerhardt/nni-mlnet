@@ -1,8 +1,8 @@
 authorName: default
 experimentName: example_mlnet-classification
-trialConcurrency: 3
-maxExecDuration: 10m
-maxTrialNum: 10
+trialConcurrency: 5
+maxExecDuration: 30m
+#maxTrialNum: 100
 #choice: local, remote
 trainingServicePlatform: aml
 searchSpacePath: search_space.json
